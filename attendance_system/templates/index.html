@@ -1,0 +1,142 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}睡眠記録{% endblock %}
+
+{% block content %}
+
+<!-- ナビゲーションメニュー -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <h1 style="font-size: 2.5rem; text-align: center;">睡眠記録</h1>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if session.get('user_id') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('all_records') }}">みんなの記録</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('calendar_view') }}">カレンダー</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">ログアウト</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">ログイン</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 公開/非公開切り替えスイッチ -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h2>今日の記録</h2>
+
+    <!-- スライドスイッチ -->
+    <form method="post" action="{{ url_for('toggle_privacy') }}">
+        <label class="switch">
+            <input type="checkbox" name="is_private" {% if is_private %}checked{% endif %} onchange="this.form.submit()">
+            <span class="slider round"></span>
+        </label>
+        <small>非公開モード</small>
+    </form>
+</div>
+
+<!-- 新しい記録を追加するフォーム -->
+<h3>新しい記録を追加する</h3>
+
+<form method="post" action="{{ url_for('record') }}">
+    <div class="form-group">
+        <label for="action">行動:</label><br/>
+        <select name="action" id="action" class="form-control">
+            <option value="wake_up">起床</option>
+            <option value="sleep">就寝</option>
+        </select><br/>
+    </div>
+
+    <div class="form-group">
+        <label for="memo">メモ (任意):</label><br/>
+        <input type="text" name="memo" id="memo" class="form-control"><br/>
+    </div>
+
+    <!-- ボタン -->
+    <button type="submit" class="btn btn-success">記録する</button>
+</form>
+
+<!-- 今日の記録一覧 -->
+<table class="table table-bordered mt-4">
+    <thead>
+        <tr>
+            <th>時間</th>
+            <th>行動</th>
+            <th>メモ</th>
+            <th>反応</th>
+            <th>削除</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if records %}
+            {% for record in records %}
+                <tr>
+                    <!-- 時間表示を秒まで含める -->
+                    <td>{{ record.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <!-- 行動表示 -->
+                    <td>{% if record.action == 'wake_up' %} 起床 {% elif record.action == 'sleep' %} 就寝 {% else %} {{ record.action }} {% endif %}</td>
+
+                    <!-- メモ -->
+                    <td>{{ record.memo if record.memo else '---' }}</td>
+
+                    <!-- いいねボタン -->
+                    <td><form action="{{ url_for('like_record', record_id=record.id, from_page='index') }}" method="post"><button type="submit" class="btn btn-sm btn-primary">👍 {{ record.likes_count }}</button></form></td>
+
+                    <!-- 削除ボタン -->
+                    <td><form action="{{ url_for('delete_record', record_id=record.id) }}" method="post"><button type="submit" class="btn btn-sm btn-danger">削除</button></form></td>
+
+                </tr>
+            {% endfor %}
+        {% else %}
+            <!-- 記録がない場合 -->
+            <tr><td colspan='5'>今日の記録はありません。</td></tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<style>
+
+/* スライドスイッチ用CSS */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top:0; left:0; right:0; bottom:0;
+  background-color:#ccc; transition:.4s; border-radius:34px;
+}
+
+.slider::before {
+  position:absolute; content:"";
+  height:26px;width:26px; left:4px; bottom:4px;
+  background-color:white; transition:.4s; border-radius:50%;
+}
+
+input:checked + .slider { background-color:#2196F3; }
+input:checked + .slider::before { transform: translateX(26px); }
+
+</style>
+
+{% endblock %}
