@@ -59,7 +59,8 @@ def init_db():
                 id INTEGER PRIMARY KEY,
                 username TEXT UNIQUE,
                 password TEXT,
-                is_admin INTEGER DEFAULT 0
+                is_admin INTEGER DEFAULT 0,
+                is_private INTEGER DEFAULT 0 -- 非公開モード用カラム追加
             )
         ''')
 
@@ -110,7 +111,6 @@ def init_db():
             else:
                 print(f"エラー: {e}")
 
-        # 🔸 今回追加した部分 🔸
         # usersテーブルにis_privateカラムが存在しない場合は追加
         try:
             cursor.execute("ALTER TABLE users ADD COLUMN is_private INTEGER DEFAULT 0")
@@ -131,7 +131,7 @@ def init_db():
     finally:
         conn.close()
 
-    # 管理者アカウントが存在しない場合のみ作成（既存コード）
+    # 管理者アカウントが存在しない場合のみ作成
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
