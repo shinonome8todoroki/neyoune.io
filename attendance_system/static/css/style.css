@@ -1,0 +1,120 @@
+/* デフォルトスタイル（PC向け） */
+.container {
+  max-width: 1200px;
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* カレンダースタイル */
+.calendar-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.calendar {
+  width: 30%; /* 各カレンダーの幅を設定 */
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.current-date {
+  background-color: #ffeb3b; /* 今日の日付をハイライト */
+  font-weight: bold;
+}
+
+/* ページネーションスタイル */
+.pagination a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  color: black;
+}
+
+.pagination a.active {
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #ddd;
+}
+
+/* スライドスイッチ用CSS */
+.switch {
+position: relative;
+display: inline-block;
+width: 60px;
+height: 34px;
+}
+
+.switch input {
+opacity: 0; width: 0; height: 0;
+}
+
+.slider {
+position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; 
+background-color:#ccc; transition:.4s; border-radius:34px;
+}
+
+.slider::before {
+position:absolute; content:""; height:26px;width:26px; left:4px; bottom:4px; 
+background-color:white; transition:.4s; border-radius:50%;
+}
+
+input:checked + .slider {background-color:#2196F3;}
+input:checked + .slider::before {transform: translateX(26px);}
+
+/* Navbarトグラー調整（スマホ表示時の灰色の問題解決）*/
+.navbar-toggler {
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background-color: transparent !important;
+}
+
+
+/* スマートフォン用スタイル調整 */
+@media (max-width:768px) {
+
+ body {
+   font-size:14px; /* ベースフォントサイズ調整 */
+ }
+
+ h1 {
+   font-size:1.8em !important; /* 見出しサイズ調整 */
+ }
+
+ h2 {
+   font-size:1.5em !important;
+ }
+
+ .table th, .table td {
+   padding:5px !important; /* テーブルのパディング調整 */
+   font-size:.9em !important; /* テーブル内フォントサイズ調整 */
+ }
+
+ .btn {
+   font-size:.9em !important; /* ボタンフォントサイズ調整 */
+   padding:.25rem .5rem !important; /* ボタンパディング調整 */
+ }
+
+ .login-title{
+     font-size:1.5em !important; /* ログイン画面タイトルサイズ調整 */
+ }
+}
