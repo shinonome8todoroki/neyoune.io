@@ -1,0 +1,107 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}睡眠記録{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>今日の記録</h1>
+
+    <!-- 「みんなの記録」「カレンダー」「ログアウト」ボタン -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div></div>
+        <div>
+            <a href="{{ url_for('all_records') }}" class="btn btn-secondary">みんなの記録</a>
+            <a href="{{ url_for('calendar_view') }}" class="btn btn-secondary">カレンダー</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">ログアウト</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- 新しい記録を追加するフォーム -->
+    <h3>新しい記録を追加する</h3>
+
+    <form method="post" action="{{ url_for('record') }}">
+        <h4>行動</h4>
+        <div class="form-group">
+            <select name="action" id="action" class="form-control">
+                <option value="wake_up">起床</option>
+                <option value="sleep">就寝</option>
+                <option value="other">その他</option>
+            </select>
+        </div>
+
+        <h4>メモ (任意)</h4>
+        <div class="form-group">
+            <input type="text" name="memo" id="memo" class="form-control">
+        </div>
+
+        <!-- ボタン -->
+        <button type="submit" class="btn btn-success">記録する</button>
+    </form>
+
+    <!-- 公開/非公開切り替えスイッチ -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <h2></h2>
+        <form method="post" action="{{ url_for('toggle_privacy') }}">
+            <label class="switch">
+                <input type="checkbox" name="is_private" {% if is_private %}checked{% endif %} onchange="this.form.submit()">
+                <span class="slider round"></span>
+            </label>
+            <small>非公開モード</small>
+        </form>
+    </div>
+
+    <!-- 今日の記録一覧 -->
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>時間</th>
+                <th>行動</th>
+                <th>メモ</th>
+                <th>反応</th>
+                <th>削除</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if records %}
+                {% for record in records %}
+                    <tr>
+                        <!-- 時間表示を秒まで含める -->
+                        <td>
+                            {% if record.timestamp %}
+                                {% if isinstance(record.timestamp, str) %}
+                                    {{ record.timestamp }}
+                                {% else %}
+                                    {{ record.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <!-- 行動表示 -->
+                        <td>{% if record.action == 'wake_up' %} 起床 {% elif record.action == 'sleep' %} 就寝 {% else %} {{ record.action }} {% endif %}</td>
+
+                        <!-- メモ -->
+                        <td>{{ record.memo if record.memo else '---' }}</td>
+
+                        <!-- いいねボタン -->
+                        <td><form action="{{ url_for('like_record', record_id=record.id, from_page='index') }}" method="post"><button type="submit" class="btn btn-sm btn-primary">👍 {{ record.likes_count }}</button></form></td>
+
+                        <!-- 削除ボタン -->
+                        <td><form action="{{ url_for('delete_record', record_id=record.id) }}" method="post"><button type="submit" class="btn btn-sm btn-danger">削除</button></form></td>
+
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <!-- 記録がない場合 -->
+                <tr><td colspan='5'>今日の記録はありません。</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
