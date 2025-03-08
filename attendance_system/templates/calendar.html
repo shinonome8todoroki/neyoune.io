@@ -1,0 +1,46 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}カレンダー{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ year }}年{{ month }}月</h1>
+
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">ホームに戻る</a>
+
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>月</th>
+                <th>火</th>
+                <th>水</th>
+                <th>木</th>
+                <th>金</th>
+                <th>土</th>
+                <th>日</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in cal %}
+                <tr>
+                    {% for day in week %}
+                        {% if day == 0 %}
+                            <td></td>
+                        {% elif day == today.day %}
+                            <td style="background-color: #f0f0f0"><a href="{{ url_for('day_records', date=today.strftime('%Y-%m-%d')) }}">{{ day }}</a></td>
+                        {% else %}
+                            <td><a href="{{ url_for('day_records', date=datetime(year, month, day).strftime('%Y-%m-%d')) }}">{{ day }}</a></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <a href="{{ url_for('calendar_view', year=prev_year, month=prev_month) }}" class="btn btn-secondary">前の月</a>
+        <a href="{{ url_for('calendar_view', year=datetime.now(pytz.timezone('Asia/Tokyo')).year, month=datetime.now(pytz.timezone('Asia/Tokyo')).month) }}" class="btn btn-secondary">現在の月に戻る</a>
+        <a href="{{ url_for('calendar_view', year=next_year, month=next_month) }}" class="btn btn-secondary">次の月</a>
+    </div>
+
+</div>
+{% endblock %}
