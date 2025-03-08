@@ -1,0 +1,53 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}カレンダー{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ year }}年{{ month }}月のカレンダー</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{{ url_for('calendar_view', year=prev_year, month=prev_month) }}">前の月</a>
+        </div>
+        <div class="col-md-4 text-center">
+            {{ year }}年{{ month }}月
+        </div>
+        <div class="col-md-4 text-right">
+            <a href="{{ url_for('calendar_view', year=next_year, month=next_month) }}">次の月</a>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>日</th>
+                <th>月</th>
+                <th>火</th>
+                <th>水</th>
+                <th>木</th>
+                <th>金</th>
+                <th>土</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in cal %}
+            <tr>
+                {% for day in week %}
+                <td>
+                    {% if day == 0 %}
+                        &nbsp;
+                    {% else %}
+                        {{ day }}
+                        {% if today.day == day and today.month == month and today.year == year %}
+                            <span class="badge bg-primary">今日</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
